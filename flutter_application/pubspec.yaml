@@ -17,6 +17,7 @@ dependencies:
   introduction_screen: ^3.1.17
   lottie: ^3.3.1
   intl: ^0.18.0  # ✅ Required for DateFormat
+  firebase_core: ^3.13.1
 
 dev_dependencies:
   flutter_test:
