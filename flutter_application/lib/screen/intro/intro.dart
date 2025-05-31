@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/model/intromodel.dart';
 import 'package:flutter_application/screen/authentication/login_screen.dart';
+import 'package:flutter_application/screen/home.dart';
+import 'package:flutter_application/services/firebase_auth_services.dart';
 
 class Introduction extends StatefulWidget {
   
@@ -11,6 +13,22 @@ class Introduction extends StatefulWidget {
 }
 
 class _IntroductionState extends State<Introduction> {
+ 
+  Future<void> navigateToNextScreen() async {
+    final user =await FirebaseAuthServices.getCurrentUser();
+
+    if (user == null) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (Route<dynamic> route) => false);
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
+  }
+
   /// List of data for each onboarding page, including images and text.
   final List<OnboardingPageData> pageDataList = [
     OnboardingPageData(
@@ -86,12 +104,7 @@ class _IntroductionState extends State<Introduction> {
                   onPressed: () async {
                     // context.read<OnboardingBloc>().add(CompleteOnboarding());
                     
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
+                    await navigateToNextScreen();
                   },
                   child: const Text(
                     'Skip',
@@ -196,12 +209,7 @@ class _IntroductionState extends State<Introduction> {
                   } else {
                     ///context.read<OnboardingBloc>().add(CompleteOnboarding());
                     
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
+                    await navigateToNextScreen();
                   }
                 },
                 child: const Text(
