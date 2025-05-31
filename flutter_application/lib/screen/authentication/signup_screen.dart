@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controller/auth_controller.dart';
+import 'package:flutter_application/model/user/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_application/screen/home.dart';
 
@@ -29,7 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   String? _selectedSex;
   DateTime? _selectedDob;
-
+  bool loading = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -98,40 +100,66 @@ void _showSexPicker() {
     ),
   );
 }
-  void _handleSignUp() {
-    if (_formKey.currentState!.validate()) {
+  void _handleSignUp()async {
+   
+     if (_formKey.currentState!.validate()) {
+      try{
+        setState(() {
+          loading = true;
+        });
       final dob = _selectedDob != null ? DateFormat('yyyy-MM-dd').format(_selectedDob!) : 'N/A';
-      print("Signup Details:");
-      print("Name: ${_firstNameController.text} ${_lastNameController.text}");
-      print("Sex: $_selectedSex");
-      print("DOB: $dob");
-      print("Email: ${_emailController.text}"); 
-
+      final user = UserModel(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: _emailController.text,
+        dob: dob != 'N/A' ? DateTime.parse(dob) : null,
+        sex: _selectedSex,
+      );
     
       if (_passwordController.text == _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Account created successfully!")),
-        // Show a success message
-      );
-        // Navigate to the home screen
-      Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
-    );
+
+        setState(() {
+          ispasswordmatch = false;
+        });
+        final result = await AuthController.signUp(user, _passwordController.text);
+
+        if (result) {
+          // Navigate to the home screen or show success message
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        } else {
+          setState(() {
+            loading = false;
+          });
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sign up failed. Please try again.')),
+          );
+        }
+       
       }
       else {
         setState(() {
           ispasswordmatch = true;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords do not match")),
-        );
+      
       }
-    }
+    } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      } finally {
+        setState(() {
+          loading = false;
+        });
+      }}
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -216,7 +244,7 @@ const SizedBox(height: 15),
                 ),  
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _handleSignUp,
+                  onPressed:!loading? _handleSignUp:null,
                   
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[700],
@@ -224,7 +252,7 @@ const SizedBox(height: 15),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   ),
-                  child: const Text("Sign Up", style: TextStyle(fontSize: 16)),
+                  child:loading?const CircularProgressIndicator(color: Colors.white,) :const Text("Sign Up", style: TextStyle(fontSize: 16)),
                 ),
               ],
             ),

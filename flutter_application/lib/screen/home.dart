@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/screen/history.dart';
-import 'package:flutter_application/screen/home_screen.dart';
-import 'package:flutter_application/screen/notification.dart';
-import 'package:flutter_application/screen/profile.dart';
+import 'package:flutter_application/screen/nav_screen/history.dart';
+import 'package:flutter_application/screen/nav_screen/home_screen.dart';
+import 'package:flutter_application/screen/nav_screen/notification.dart';
+import 'package:flutter_application/screen/nav_screen/profile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

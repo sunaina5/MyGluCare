@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 //import signup_screen.dart';
 import "package:flutter_application/screen/authentication/signup_screen.dart";
+import 'package:flutter_application/screen/home.dart';
+import 'package:flutter_application/services/firebase_auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+ bool _isPasswordVisible = false; // For toggling password visibility
   bool _isLogin = true; // Toggle between login and create account
 
   void _toggleForm() {
@@ -21,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-
+bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,17 +57,56 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: !_isPasswordVisible,
+                  decoration:  InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
                     prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(!_isPasswordVisible? Icons.visibility: Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: (){
-                    
+                  onPressed:isLoading?null: ()async{
+                    try{
+                      setState(() {
+                        isLoading = true;
+                      });
+
+                      final user = await FirebaseAuthServices.loginWithEmailAndPassword(_emailController.text, _passwordController.text);
+
+                      if (user != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Login successful!',style: TextStyle(color: Colors.white),),backgroundColor: Colors.green,),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const HomePage()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Login failed. Please try again.')),
+                        );
+                      }
+
+                    }
+                    catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: $e')),
+                      );
+                    }
+                    finally{
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
@@ -76,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text(_isLogin ? "Login" : "Create Account"),
+                  child:isLoading?const CircularProgressIndicator(color: Colors.white,): Text(_isLogin ? "Login" : "Create Account"),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
