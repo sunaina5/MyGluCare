@@ -22,6 +22,9 @@ mixin _$UserModel {
   DateTime? get dob;
   String? get sex;
   String? get profileImage;
+  String? get glucoseValue;
+  String? get heartRateValue;
+  String? get stepsValue;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -47,17 +50,23 @@ mixin _$UserModel {
             (identical(other.dob, dob) || other.dob == dob) &&
             (identical(other.sex, sex) || other.sex == sex) &&
             (identical(other.profileImage, profileImage) ||
-                other.profileImage == profileImage));
+                other.profileImage == profileImage) &&
+            (identical(other.glucoseValue, glucoseValue) ||
+                other.glucoseValue == glucoseValue) &&
+            (identical(other.heartRateValue, heartRateValue) ||
+                other.heartRateValue == heartRateValue) &&
+            (identical(other.stepsValue, stepsValue) ||
+                other.stepsValue == stepsValue));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, firstName, lastName, email, dob, sex, profileImage);
+  int get hashCode => Object.hash(runtimeType, id, firstName, lastName, email,
+      dob, sex, profileImage, glucoseValue, heartRateValue, stepsValue);
 
   @override
   String toString() {
-    return 'UserModel(id: $id, firstName: $firstName, lastName: $lastName, email: $email, dob: $dob, sex: $sex, profileImage: $profileImage)';
+    return 'UserModel(id: $id, firstName: $firstName, lastName: $lastName, email: $email, dob: $dob, sex: $sex, profileImage: $profileImage, glucoseValue: $glucoseValue, heartRateValue: $heartRateValue, stepsValue: $stepsValue)';
   }
 }
 
@@ -73,7 +82,10 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String? email,
       DateTime? dob,
       String? sex,
-      String? profileImage});
+      String? profileImage,
+      String? glucoseValue,
+      String? heartRateValue,
+      String? stepsValue});
 }
 
 /// @nodoc
@@ -95,6 +107,9 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? dob = freezed,
     Object? sex = freezed,
     Object? profileImage = freezed,
+    Object? glucoseValue = freezed,
+    Object? heartRateValue = freezed,
+    Object? stepsValue = freezed,
   }) {
     return _then(_self.copyWith(
       id: freezed == id
@@ -125,6 +140,18 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
           ? _self.profileImage
           : profileImage // ignore: cast_nullable_to_non_nullable
               as String?,
+      glucoseValue: freezed == glucoseValue
+          ? _self.glucoseValue
+          : glucoseValue // ignore: cast_nullable_to_non_nullable
+              as String?,
+      heartRateValue: freezed == heartRateValue
+          ? _self.heartRateValue
+          : heartRateValue // ignore: cast_nullable_to_non_nullable
+              as String?,
+      stepsValue: freezed == stepsValue
+          ? _self.stepsValue
+          : stepsValue // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -139,7 +166,10 @@ class _UserModel implements UserModel {
       this.email,
       this.dob,
       this.sex,
-      this.profileImage});
+      this.profileImage,
+      this.glucoseValue,
+      this.heartRateValue,
+      this.stepsValue});
   factory _UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
@@ -157,6 +187,12 @@ class _UserModel implements UserModel {
   final String? sex;
   @override
   final String? profileImage;
+  @override
+  final String? glucoseValue;
+  @override
+  final String? heartRateValue;
+  @override
+  final String? stepsValue;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -187,17 +223,23 @@ class _UserModel implements UserModel {
             (identical(other.dob, dob) || other.dob == dob) &&
             (identical(other.sex, sex) || other.sex == sex) &&
             (identical(other.profileImage, profileImage) ||
-                other.profileImage == profileImage));
+                other.profileImage == profileImage) &&
+            (identical(other.glucoseValue, glucoseValue) ||
+                other.glucoseValue == glucoseValue) &&
+            (identical(other.heartRateValue, heartRateValue) ||
+                other.heartRateValue == heartRateValue) &&
+            (identical(other.stepsValue, stepsValue) ||
+                other.stepsValue == stepsValue));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, firstName, lastName, email, dob, sex, profileImage);
+  int get hashCode => Object.hash(runtimeType, id, firstName, lastName, email,
+      dob, sex, profileImage, glucoseValue, heartRateValue, stepsValue);
 
   @override
   String toString() {
-    return 'UserModel(id: $id, firstName: $firstName, lastName: $lastName, email: $email, dob: $dob, sex: $sex, profileImage: $profileImage)';
+    return 'UserModel(id: $id, firstName: $firstName, lastName: $lastName, email: $email, dob: $dob, sex: $sex, profileImage: $profileImage, glucoseValue: $glucoseValue, heartRateValue: $heartRateValue, stepsValue: $stepsValue)';
   }
 }
 
@@ -216,7 +258,10 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String? email,
       DateTime? dob,
       String? sex,
-      String? profileImage});
+      String? profileImage,
+      String? glucoseValue,
+      String? heartRateValue,
+      String? stepsValue});
 }
 
 /// @nodoc
@@ -238,6 +283,9 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? dob = freezed,
     Object? sex = freezed,
     Object? profileImage = freezed,
+    Object? glucoseValue = freezed,
+    Object? heartRateValue = freezed,
+    Object? stepsValue = freezed,
   }) {
     return _then(_UserModel(
       id: freezed == id
@@ -267,6 +315,18 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
       profileImage: freezed == profileImage
           ? _self.profileImage
           : profileImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      glucoseValue: freezed == glucoseValue
+          ? _self.glucoseValue
+          : glucoseValue // ignore: cast_nullable_to_non_nullable
+              as String?,
+      heartRateValue: freezed == heartRateValue
+          ? _self.heartRateValue
+          : heartRateValue // ignore: cast_nullable_to_non_nullable
+              as String?,
+      stepsValue: freezed == stepsValue
+          ? _self.stepsValue
+          : stepsValue // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }

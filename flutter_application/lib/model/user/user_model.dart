@@ -13,6 +13,10 @@ abstract class UserModel with _$UserModel {
     DateTime? dob,
     String? sex,
     String? profileImage,
+    String? glucoseValue,
+    String? heartRateValue,
+    String? stepsValue,
+    
   }) = _UserModel;
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);

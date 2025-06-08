@@ -14,6 +14,9 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       dob: json['dob'] == null ? null : DateTime.parse(json['dob'] as String),
       sex: json['sex'] as String?,
       profileImage: json['profileImage'] as String?,
+      glucoseValue: json['glucoseValue'] as String?,
+      heartRateValue: json['heartRateValue'] as String?,
+      stepsValue: json['stepsValue'] as String?,
     );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -25,4 +28,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'dob': instance.dob?.toIso8601String(),
       'sex': instance.sex,
       'profileImage': instance.profileImage,
+      'glucoseValue': instance.glucoseValue,
+      'heartRateValue': instance.heartRateValue,
+      'stepsValue': instance.stepsValue,
     };

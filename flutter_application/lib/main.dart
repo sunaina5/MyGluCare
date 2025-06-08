@@ -1,8 +1,13 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application/credentials/supabase.dart';
 import 'package:flutter_application/services/firestore_db.dart';
 import 'package:flutter_application/splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sup;
 import 'firebase_options.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +34,16 @@ void main() async{
     persistenceEnabled: true, // Enable offline persistence
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED, // Optional: No size limit
   );
+
+//---------------------------------supbase initialization------------------------------------------------
+  // Initialize Supabase or any other services here if needed
+  await sup.Supabase.initialize(
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
+  );
+ 
+
+
   runApp(const MainApp());
 }
 

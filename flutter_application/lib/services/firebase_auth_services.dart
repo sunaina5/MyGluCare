@@ -84,7 +84,7 @@ static Future<User?> getCurrentUser() async {
   }     
 }
 
-static Future<void> updateUserProfile({
+static Future<bool> updateUserProfile({
   String? displayName,
   String? photoURL,
 }) async {
@@ -93,6 +93,7 @@ static Future<void> updateUserProfile({
     if (user != null) {
       await user.updateProfile(displayName: displayName, photoURL: photoURL);
       await user.reload();
+      return true;
     } else {
       throw Exception('No user is currently signed in.');
     }

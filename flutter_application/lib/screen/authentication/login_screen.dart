@@ -15,13 +15,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
  bool _isPasswordVisible = false; // For toggling password visibility
-  bool _isLogin = true; // Toggle between login and create account
+  bool isLogin = true; // Toggle between login and create account
 
-  void _toggleForm() {
-    setState(() {
-      _isLogin = !_isLogin;
-    });
-  }
+  
 
 bool isLoading = false;
   @override
@@ -41,7 +37,7 @@ bool isLoading = false;
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _isLogin ? "Login to MyGluCare" : "Create Your Account",
+                  isLogin ? "Login to MyGluCare" : "Create Your Account",
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 32),
@@ -117,7 +113,7 @@ bool isLoading = false;
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child:isLoading?const CircularProgressIndicator(color: Colors.white,): Text(_isLogin ? "Login" : "Create Account"),
+                  child:isLoading?const CircularProgressIndicator(color: Colors.white,): Text(isLogin ? "Login" : "Create Account"),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
