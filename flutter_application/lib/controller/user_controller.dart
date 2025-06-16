@@ -43,7 +43,10 @@ class UserController {
           throw Exception('Failed to upload avatar image');
         }
       }
-      
+      await FirebaseAuthServices.updateUserProfile(
+        displayName: '${user.firstName} ${user.lastName}',
+        photoURL: user.profileImage,
+      );
       await docRef.set(user.toJson(), SetOptions(merge: true));
     } catch (e) {
       throw Exception('Failed to update user: $e');

@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controller/user_controller.dart';
 import 'package:flutter_application/screen/authentication/login_screen.dart';
 import 'package:flutter_application/screen/profile/edit_profile_screen.dart';
-
 import 'package:flutter_application/services/firebase_auth_services.dart';
+import 'package:flutter_application/services/notification_services.dart';
 import 'package:flutter_application/utils/profile_image_loader.dart';
+import 'package:permission_handler/permission_handler.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -15,7 +18,11 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
+  final currentUser= FirebaseAuth.instance.currentUser;
+
   late Future userFuture;
+    bool _isReminder = false;
+  TimeOfDay _selectedTime = TimeOfDay.now();
 
   @override
   void initState() {
@@ -28,6 +35,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userFuture = UserController.getCurrentUser();
     });
   }
+
+
+void setReminder(bool value) async {
+    if (value) {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Permission.notification.isDenied.then((value) {
+        if (value) {
+          Permission.notification.request();
+        }
+      });
+
+      _showTimePicker();
+
+     
+      setState(() {
+        _isReminder = value;
+      });
+    } else {
+      NotificationServices.cancelAllNotifications();
+     
+      setState(() {
+        _isReminder = value;
+      });
+    }
+  }
+
+  Future<void> _showTimePicker() async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    );
+    if (pickedTime != null && pickedTime != _selectedTime) {
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+      _scheduleNotification();
+    }
+  }
+
+  void _scheduleNotification() {
+    final notificationTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      _selectedTime.hour,
+      _selectedTime.minute,
+    );
+
+    NotificationServices.scheduleNotificattions(
+      'Glucare Reminder',
+      'Hii ${currentUser?.displayName}, it\'s time to check your glucose levels.',
+      '',
+      notificationTime,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -127,11 +190,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 // Settings list tile
                 ListTile(
-                  leading: const Icon(Icons.settings, color: Colors.blue),
-                  title: const Text('Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                  onTap: () {
-                    // Navigate to settings screen
-                  },
+                  leading: const Icon(Icons.notifications, color: Colors.yellow),
+                  title: const Text('Notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                   trailing: Switch(
+                  activeColor: Colors.blue,
+                  activeTrackColor: Colors.blue.withOpacity(0.5),
+                  inactiveTrackColor: Colors.grey,
+                  inactiveThumbColor: Colors.white,
+                  
+                  value: _isReminder,
+                  onChanged: ((value) => setReminder(value))),
                 ),
             
                 // Logout list tile   

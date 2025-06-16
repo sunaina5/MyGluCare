@@ -1,10 +1,14 @@
+import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/credentials/supabase.dart';
 import 'package:flutter_application/services/firestore_db.dart';
+import 'package:flutter_application/services/notification_services.dart';
 import 'package:flutter_application/splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sup;
@@ -42,6 +46,12 @@ void main() async{
     anonKey: supabaseAnonKey,
   );
  
+await NotificationServices.init();
+  tz.initializeTimeZones();
+// log token for current user
+  final user = FirebaseAuth.instance.currentUser;
+  final token = await user?.getIdToken();
+  log('Current user token: $token');
 
 
   runApp(const MainApp());

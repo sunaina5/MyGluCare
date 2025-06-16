@@ -3,6 +3,7 @@ import 'package:flutter_application/model/intromodel.dart';
 import 'package:flutter_application/screen/authentication/login_screen.dart';
 import 'package:flutter_application/screen/home.dart';
 import 'package:flutter_application/services/firebase_auth_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Introduction extends StatefulWidget {
   
@@ -13,8 +14,15 @@ class Introduction extends StatefulWidget {
 }
 
 class _IntroductionState extends State<Introduction> {
+  // Inside _IntroductionState
+
+Future<void> markIntroSeen() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('seen_intro', true);
+}
  
   Future<void> navigateToNextScreen() async {
+     await markIntroSeen();  // Mark intro as seen
     final user =await FirebaseAuthServices.getCurrentUser();
 
     if (user == null) {

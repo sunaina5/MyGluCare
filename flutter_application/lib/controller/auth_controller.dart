@@ -11,6 +11,9 @@ class AuthController {
         // Create the user in Firestore
         final isUserCreated = await createUserInFirestore(user);
         if(isUserCreated){
+          await FirebaseAuthServices.updateUserProfile(
+            displayName: '${user.firstName} ${user.lastName}',
+          );
           return true;
         }else{
           // If user creation in Firestore fails, delete the Firebase Auth user
