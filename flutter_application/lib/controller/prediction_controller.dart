@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_application/model/prediction_history/prediction_history.dart';
 import 'package:flutter_application/services/firestore_db.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_application/services/notification_services.dart';
 class PredictionController {
   static final userId = FirebaseAuth.instance.currentUser?.uid;
   static Stream<List<PredictionHistory>> getPredictionHistoryStream() {
@@ -37,13 +38,19 @@ class PredictionController {
         ),
       );
       if (response.statusCode == 200) {
-        final data = response.data;
-        // Assuming the API returns a JSON object that can be mapped to PredictionHistory
-        return PredictionHistory.fromJson(data);
-      } else {
-        debugPrint('Error: ${response.statusMessage}');
-        return null;
+      final data = response.data;
+      final prediction = PredictionHistory.fromJson(data);
+      
+      // Schedule notification if insulin check time is provided
+      if (prediction.next_insulin_check_suggested_at != null) {
+        await NotificationServices.scheduleInsulinCheckNotification(prediction);
       }
+      
+      return prediction;
+    } else {
+      debugPrint('Error: ${response.statusMessage}');
+      return null;
+    }
     }catch (e){
       debugPrint('Error predicting: $e');
       return Future.value(null);

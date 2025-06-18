@@ -7,6 +7,7 @@ import 'package:flutter_application/screen/authentication/login_screen.dart';
 import 'package:flutter_application/screen/profile/edit_profile_screen.dart';
 import 'package:flutter_application/services/firebase_auth_services.dart';
 import 'package:flutter_application/services/notification_services.dart';
+import 'package:flutter_application/services/reminder_storage_service.dart';
 import 'package:flutter_application/utils/profile_image_loader.dart';
 import 'package:permission_handler/permission_handler.dart';
 class ProfileScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late Future userFuture;
     bool _isReminder = false;
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  
 
   @override
   void initState() {
@@ -45,51 +46,38 @@ void setReminder(bool value) async {
           Permission.notification.request();
         }
       });
-
-      _showTimePicker();
-
-     
       setState(() {
         _isReminder = value;
       });
+       await ReminderStorage.setReminderEnabled(true);
     } else {
       NotificationServices.cancelAllNotifications();
      
       setState(() {
         _isReminder = value;
       });
+      await ReminderStorage.setReminderEnabled(false);
     }
   }
 
-  Future<void> _showTimePicker() async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-    );
-    if (pickedTime != null && pickedTime != _selectedTime) {
-      setState(() {
-        _selectedTime = pickedTime;
-      });
-      _scheduleNotification();
-    }
-  }
+  
 
-  void _scheduleNotification() {
-    final notificationTime = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-      _selectedTime.hour,
-      _selectedTime.minute,
-    );
+  // void _scheduleNotification() {
+  //   final notificationTime = DateTime(
+  //     DateTime.now().year,
+  //     DateTime.now().month,
+  //     DateTime.now().day,
+  //     _selectedTime.hour,
+  //     _selectedTime.minute,
+  //   );
 
-    NotificationServices.scheduleNotificattions(
-      'Glucare Reminder',
-      'Hii ${currentUser?.displayName}, it\'s time to check your glucose levels.',
-      '',
-      notificationTime,
-    );
-  }
+  //   NotificationServices.scheduleNotificattions(
+  //     'Glucare Reminder',
+  //     'Hii ${currentUser?.displayName}, it\'s time to check your glucose levels.',
+  //     '',
+  //     notificationTime,
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -175,8 +163,14 @@ void setReminder(bool value) async {
                   ],
                 ),
                 const SizedBox(height: 24),
+                const SizedBox(height: 24),
                 // Edit Profile list tile
                 ListTile(
+                  tileColor: Colors.blue.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: Colors.blue, width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   leading: const Icon(Icons.person, color: Colors.blue),
                   title: const Text('Edit Profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   onTap: () async{
@@ -187,23 +181,46 @@ void setReminder(bool value) async {
                     _refreshUser();
                   },
                 ),
+                const SizedBox(height: 16),
 
-                // Settings list tile
+              //  Settings list tile
                 ListTile(
+                  tileColor: Colors.yellow.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: Colors.yellow, width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   leading: const Icon(Icons.notifications, color: Colors.yellow),
                   title: const Text('Notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                   trailing: Switch(
-                  activeColor: Colors.blue,
-                  activeTrackColor: Colors.blue.withOpacity(0.5),
-                  inactiveTrackColor: Colors.grey,
-                  inactiveThumbColor: Colors.white,
-                  
-                  value: _isReminder,
-                  onChanged: ((value) => setReminder(value))),
+                   trailing: FutureBuilder<bool>(
+                     future: ReminderStorage.getReminderEnabled(),
+                     builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return const Icon(Icons.error, color: Colors.red);
+                      } 
+                        _isReminder = snapshot.data ?? false;
+
+                       return Switch(
+                                         activeColor: Colors.white,
+                                         activeTrackColor: Colors.green,
+                                         inactiveTrackColor: Colors.red,
+                                         inactiveThumbColor: Colors.white,
+                                         
+                                         value: _isReminder,
+                                         onChanged: ((value) => setReminder(value)));
+                     }
+                   ),
                 ),
-            
+            const SizedBox(height: 16),
                 // Logout list tile   
                 ListTile(
+                  tileColor: Colors.red.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: Colors.red, width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   leading: const Icon(Icons.logout, color: Colors.red),
                   title: const Text('Logout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   onTap: () {

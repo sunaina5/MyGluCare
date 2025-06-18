@@ -1,0 +1,2 @@
+C:/Users/sadiq/Desktop/Capstone/MyGluCare/flutter_application/android/app/.cxx/RelWithDebInfo/544z4s6c/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/sadiq/Desktop/Capstone/MyGluCare/flutter_application/android/app/.cxx/RelWithDebInfo/544z4s6c/x86_64/CMakeFiles/rebuild_cache.dir

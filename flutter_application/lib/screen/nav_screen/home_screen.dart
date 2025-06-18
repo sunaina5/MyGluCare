@@ -4,9 +4,12 @@ import 'package:flutter_application/controller/prediction_controller.dart';
 import 'package:flutter_application/model/prediction_history/prediction_history.dart';
 import 'package:flutter_application/screen/home_widgets/home_stats.dart';
 import 'package:flutter_application/screen/home_widgets/prediction_result.dart';
+
 import 'package:flutter_application/utils/helper.dart';
 import 'package:flutter_application/widgets/activity_dropdown.dart';
 import 'package:flutter_application/widgets/input_field.dart';
+import 'package:flutter_application/widgets/prediction_shimmer.dart';
+import 'package:flutter_application/widgets/processing_icon.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                      HomeStats(),
+                     isPredicting?ProcessingIcon(): HomeStats(),
                       const SizedBox(height: 30),
                       const Text("Enter Health Data for Prediction", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
@@ -105,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     setState(() {
                       isPredicting = true; // Set predicting state to true
                     });
+                     
                     final bg = mgDlToMmolL(
                       double.tryParse(bgMeanController.text) ?? 0.0,
                     );
@@ -122,8 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     inputSummary,
                     );
           }
-                    // Call your prediction function here with the collected data
-                    // For example: await predictGlucose(bgMean, insulinMean, carbsMean, stepsMean, hrMean, calsMean, activityType);
+          //           // Call your prediction function here with the collected data
+          //           // For example: await predictGlucose(bgMean, insulinMean, carbsMean, stepsMean, hrMean, calsMean, activityType);
                    }
                   catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -133,6 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   finally {
                     setState(() {
                       isPredicting = false; // Reset the predicting state
+                      // Clear the input fields after prediction
+                      bgMeanController.clear();
+                      insulinMeanController.clear();
+                      carbsMeanController.clear();
+                      stepsMeanController.clear();
+                      hrMeanController.clear();
+                      calsMeanController.clear();
+                      _selectedActivity = null; // Reset activity selection
                     });
                   }
                     },
@@ -147,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               const Text("Prediction Result", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              PredictionResult()
+             isPredicting?PredictionShimmer():  PredictionResult()
             ],
           ),
         ),
