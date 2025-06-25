@@ -5,9 +5,14 @@ import 'package:flutter_application/services/firestore_db.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_application/services/notification_services.dart';
 class PredictionController {
-  static final userId = FirebaseAuth.instance.currentUser?.uid;
+  
   static Stream<List<PredictionHistory>> getPredictionHistoryStream() {
     try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        debugPrint('User ID is null, cannot fetch prediction history');
+        return Stream.value([]);
+      }
       return firestoreDb
           .collection('prediction_history')
           .where('user_id', isEqualTo: userId)

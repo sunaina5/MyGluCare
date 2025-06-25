@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application/key/global_key.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,7 +55,7 @@ await NotificationServices.init();
   log('Current user token: $token');
 
 
-  runApp(const MainApp());
+  runApp( const MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -62,7 +63,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
+      navigatorKey: navigatorKey,
+      scaffoldMessengerKey: messengerKey,
       home: Splash( 
         // splash: Splash(),
       ),

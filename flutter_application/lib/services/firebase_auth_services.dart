@@ -102,10 +102,10 @@ static Future<bool> updateUserProfile({
   }
 }
 
-// cahnge password
-static Future<void> changePassword(String newPassword) async {
+// change password
+static Future<void> changePassword(String newPassword, User? user) async {
   try {
-    final User? user = _auth.currentUser;
+
     if (user != null) {
       await user.updatePassword(newPassword);
       await user.reload();
@@ -113,6 +113,14 @@ static Future<void> changePassword(String newPassword) async {
       throw Exception('No user is currently signed in.');
     }
   } catch (e) {
+    log('Error changing password: $e');
+    if (e is FirebaseAuthException) {
+      if (e.code == 'weak-password') {
+        throw Exception('The password provided is too weak.');
+      } else if (e.code == 'requires-recent-login') {
+        throw Exception('Please log in again to change your password.');
+      }
+    }
     throw Exception('Error changing password: $e');
   }
 }

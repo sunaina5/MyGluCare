@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controller/user_controller.dart';
+import 'package:flutter_application/key/global_key.dart';
 import 'package:flutter_application/model/user/user_model.dart';
 import 'package:flutter_application/utils/pick_and_crop_image.dart';
 import 'package:flutter_application/utils/profile_image_loader.dart';
@@ -215,16 +216,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           stepsValue: stepsValue,
                         );
                         await UserController.updateUser(updatedUser, _avatarImage);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Profile updated successfully!')),
+                        messengerKey.currentState?.showSnackBar(
+                          const SnackBar(content: Text('Profile updated successfully!', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green, duration: Duration(seconds: 2)),
                         );
-                        Navigator.pop(context); // Return to previous screen with success
+                        navigatorKey.currentState?.pop(); // Return to previous screen with success
                       } catch (e) {
                         setState(() {
                           loading = false;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error updating profile: $e')),
+                        messengerKey.currentState?.showSnackBar(
+                          SnackBar(content: Text('Error updating profile: $e', style: TextStyle(color: Colors.white)), backgroundColor: Colors.red),
                         );
 
                       } finally {

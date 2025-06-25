@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controller/prediction_controller.dart';
+import 'package:flutter_application/key/global_key.dart';
 import 'package:flutter_application/model/prediction_history/prediction_history.dart';
 import 'package:flutter_application/screen/home_widgets/home_stats.dart';
 import 'package:flutter_application/screen/home_widgets/prediction_result.dart';
@@ -29,6 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
  int? _selectedActivity;
  bool isPredicting = false;
  final user = FirebaseAuth.instance.currentUser;
+
+@override
+  void initState() {
+    setState(() {
+      
+    });
+    super.initState();
+  }
+
   @override
   void dispose() {
     bgMeanController.dispose();
@@ -130,8 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
           //           // For example: await predictGlucose(bgMean, insulinMean, carbsMean, stepsMean, hrMean, calsMean, activityType);
                    }
                   catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Error: ${e.toString()}")),
+                    messengerKey.currentState?.showSnackBar(
+                      SnackBar(content: Text("Error: ${e.toString()}", style: const TextStyle(fontSize: 16)),),
                     );
                   }
                   finally {

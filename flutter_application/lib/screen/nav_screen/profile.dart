@@ -2,10 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controller/cache_cleaner.dart';
 import 'package:flutter_application/controller/user_controller.dart';
-import 'package:flutter_application/screen/authentication/login_screen.dart';
+import 'package:flutter_application/key/global_key.dart';
+
+
 import 'package:flutter_application/screen/profile/edit_profile_screen.dart';
 import 'package:flutter_application/services/firebase_auth_services.dart';
+
 import 'package:flutter_application/services/notification_services.dart';
 import 'package:flutter_application/services/reminder_storage_service.dart';
 import 'package:flutter_application/utils/profile_image_loader.dart';
@@ -24,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late Future userFuture;
     bool _isReminder = false;
   
-
+ bool isObscure = true; // For toggling password visibility
   @override
   void initState() {
     super.initState();
@@ -214,6 +218,17 @@ void setReminder(bool value) async {
                    ),
                 ),
             const SizedBox(height: 16),
+            ListTile(
+  tileColor: Colors.purple.withOpacity(0.1),
+  shape: RoundedRectangleBorder(
+    side: const BorderSide(color: Colors.purple, width: 1),
+    borderRadius: BorderRadius.circular(10),
+  ),
+  leading: const Icon(Icons.password, color: Colors.purple),
+  title: const Text("Change Password"),
+  onTap: () => _showChangePasswordDialog(context),
+),
+                const SizedBox(height: 16),
                 // Logout list tile   
                 ListTile(
                   tileColor: Colors.red.withOpacity(0.1),
@@ -242,10 +257,12 @@ void setReminder(bool value) async {
                             child: const Text('Cancel'),
                           ),
                           OutlinedButton(
-                            onPressed: ()  {
-                             FirebaseAuthServices.logoutUser();
-                              Navigator.pop(context);
-                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                            onPressed: () async {
+                             
+                              await clearFirestoreCacheOnLogout();
+                             
+                            
+          
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.red,
@@ -265,6 +282,7 @@ void setReminder(bool value) async {
         ),
       ),
     );
+
   }
 
   _getMonthName(int month) {
@@ -297,6 +315,97 @@ void setReminder(bool value) async {
         return '';
     }
   }
+
+  void _showChangePasswordDialog(BuildContext context) {
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  showDialog(
+    context: context,
+    builder: (ctx) {
+      return AlertDialog(
+        title: const Text('Change Password', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: newPasswordController,
+                  obscureText: isObscure,
+                  decoration:  InputDecoration(
+                    labelText: 'New Password',
+                    prefixIcon: Icon(Icons.lock_outline),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                   
+                  ),
+                  validator: (value) =>
+                      value == null || value.length < 6 ? 'Enter at least 6 characters' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: isObscure,
+                  decoration:  InputDecoration(
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    labelText: 'Confirm Password',
+                    prefixIcon: Icon(Icons.lock),
+                   
+                  ),
+                  validator: (value) =>
+                      value != newPasswordController.text ? 'Passwords do not match' : null,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.red,
+              side: const BorderSide(color: Colors.red),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          OutlinedButton(
+            onPressed: () async {
+              if (formKey.currentState?.validate() ?? false) {
+                try {
+                  await FirebaseAuthServices.changePassword(newPasswordController.text.trim(), currentUser);
+                navigatorKey.currentState?.pop();
+                messengerKey.currentState?.showSnackBar(
+                  const SnackBar(content: Text('Password changed successfully', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green, duration: Duration(seconds: 2)),
+                );
+                } catch (e) {
+                  navigatorKey.currentState?.pop();
+                  messengerKey.currentState?.showSnackBar(
+                    SnackBar(content: Text('Failed: ${e.toString()}', style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red, duration: const Duration(seconds: 2)),
+                  );
+                }
+              }
+            },
+            style: OutlinedButton.styleFrom(
+              
+              foregroundColor: Colors.blue,
+              side: const BorderSide(color: Colors.blue),
+            ),
+            child: const Text('Update'),
+          ),
+        ],
+      );
+    },
+  );
+}
 }
 
 class _MetricTile extends StatelessWidget {
@@ -322,4 +431,7 @@ class _MetricTile extends StatelessWidget {
       ],
     );
   }
+
+  
+
 }

@@ -6,9 +6,14 @@ import 'package:flutter_application/screen/history_detail/widgets/gauge.dart';
 import 'package:flutter_application/utils/helper.dart';
 import 'package:flutter_application/widgets/state_card.dart';
 
-class HomeStats extends StatelessWidget {
+class HomeStats extends StatefulWidget {
   const HomeStats({super.key});
 
+  @override
+  State<HomeStats> createState() => _HomeStatsState();
+}
+
+class _HomeStatsState extends State<HomeStats> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<PredictionHistory>>(

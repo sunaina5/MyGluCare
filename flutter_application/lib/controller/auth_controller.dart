@@ -25,7 +25,7 @@ class AuthController {
     }
     catch(e){
       
-      return false;
+      throw Exception('Error during sign up: $e');
     }
   }
 
@@ -53,7 +53,7 @@ class AuthController {
       return true;
     } catch (e) {
      
-      return false;
+      throw Exception('Error creating user in Firestore: $e');
     }
   }
   

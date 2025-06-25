@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controller/auth_controller.dart';
+import 'package:flutter_application/key/global_key.dart';
 import 'package:flutter_application/model/user/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_application/screen/home.dart';
@@ -125,16 +126,16 @@ void _showSexPicker() {
 
         if (result) {
           // Navigate to the home screen or show success message
-          Navigator.pushReplacement(
-            context,
+          navigatorKey.currentState?.pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const HomePage()),
+            (route) => false,
           );
         } else {
           setState(() {
             loading = false;
           });
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
+          messengerKey.currentState?.showSnackBar(
             const SnackBar(content: Text('Sign up failed. Please try again.')),
           );
         }
@@ -147,7 +148,7 @@ void _showSexPicker() {
       
       }
     } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messengerKey.currentState?.showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
       } finally {

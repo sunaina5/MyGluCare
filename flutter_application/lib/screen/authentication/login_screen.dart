@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/key/global_key.dart';
+import 'package:flutter_application/screen/authentication/forget_password.dart';
 //import signup_screen.dart';
 import "package:flutter_application/screen/authentication/signup_screen.dart";
 import 'package:flutter_application/screen/home.dart';
@@ -79,23 +81,22 @@ bool isLoading = false;
                       final user = await FirebaseAuthServices.loginWithEmailAndPassword(_emailController.text, _passwordController.text);
 
                       if (user != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        messengerKey.currentState?.showSnackBar(
                           const SnackBar(content: Text('Login successful!',style: TextStyle(color: Colors.white),),backgroundColor: Colors.green,),
                         );
-                        Navigator.pushReplacement(
-                          context,
+                        navigatorKey.currentState?.pushReplacement(
                           MaterialPageRoute(builder: (context) => const HomePage()),
                         );
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Login failed. Please try again.')),
+                        messengerKey.currentState?.showSnackBar(
+                          const SnackBar(content: Text('Login failed. Please try again.',style: TextStyle(color: Colors.white),),backgroundColor: Colors.red,),
                         );
                       }
 
                     }
                     catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
+                      messengerKey.currentState?.showSnackBar(
+                        SnackBar(content: Text('Error: $e',style: const TextStyle(color: Colors.white),),backgroundColor: Colors.red,),
                       );
                     }
                     finally{
@@ -115,6 +116,16 @@ bool isLoading = false;
                   ),
                   child:isLoading?const CircularProgressIndicator(color: Colors.white,): Text(isLogin ? "Login" : "Create Account"),
                 ),
+                const SizedBox(height: 16),
+                TextButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
+    );
+  },
+  child: const Text("Forgot password?"),
+),
                 const SizedBox(height: 16),
                 TextButton(
   onPressed: () {

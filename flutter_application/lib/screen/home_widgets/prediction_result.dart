@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controller/prediction_controller.dart';
 import 'package:flutter_application/model/prediction_history/prediction_history.dart';
+
 import 'package:flutter_application/utils/helper.dart';
 
-class PredictionResult extends StatelessWidget {
+class PredictionResult extends StatefulWidget {
   const PredictionResult({super.key});
 
+  @override
+  State<PredictionResult> createState() => _PredictionResultState();
+}
+
+class _PredictionResultState extends State<PredictionResult> {
+  @override
+  void initState() {
+   // refresh the state when the widget is initialized
+   
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,6 +74,7 @@ class PredictionResult extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildDetailRow(String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
