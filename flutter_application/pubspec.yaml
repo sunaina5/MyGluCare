@@ -36,6 +36,7 @@ dependencies:
   dio: ^5.8.0+1
   shared_preferences: ^2.5.3
   shimmer: ^3.0.0
+  showcaseview: ^4.0.1
 
 
 dev_dependencies:
