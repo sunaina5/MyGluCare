@@ -8,6 +8,7 @@ import 'package:flutter_application/screen/home_widgets/prediction_result.dart';
 
 import 'package:flutter_application/utils/helper.dart';
 import 'package:flutter_application/widgets/activity_dropdown.dart';
+
 import 'package:flutter_application/widgets/input_field.dart';
 import 'package:flutter_application/widgets/prediction_shimmer.dart';
 import 'package:flutter_application/widgets/processing_icon.dart';
@@ -74,6 +75,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  static const Map<String, List<double>> realisticMedicalRanges = {
+    'bloodGlucose': [30, 600],
+    'insulin': [0, 200],
+    'carbs': [0, 700],
+    'steps': [0, 80000],
+    'heartRate': [30, 220],
+    'calories': [500, 8000],
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: Text(
           "Welcome Back, ${user?.displayName != null && user!.displayName!.isNotEmpty ? user?.displayName!.split(' ')[0] : ''}",
           style: TextStyle(
@@ -92,6 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Form(
+          autovalidateMode:
+              AutovalidateMode.onUserInteraction, // 👈 LIVE validation
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,16 +145,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                        child: InputField(
-                            controller: bgMeanController,
-                            hintText: "e.g. 70 - 180",
-                            label: "Blood Glucose(mg/DL)")),
+                      child: InputField(
+                        controller: bgMeanController,
+                        hintText: "e.g. 70 - 180",
+                        label: "Blood Glucose(mg/DL)",
+                        validator: (value) => validateInput(
+                          value,
+                          "Blood Glucose",
+                          realisticMedicalRanges['bloodGlucose']![0],
+                          realisticMedicalRanges['bloodGlucose']![1],
+                        ),
+                      ),
+                    ),
                     SizedBox(width: 20),
                     Expanded(
                         child: InputField(
-                            controller: insulinMeanController,
-                            hintText: "e.g. 0 - 50",
-                            label: "Insulin(unit) mean")),
+                      controller: insulinMeanController,
+                      hintText: "e.g. 0 - 50",
+                      label: "Insulin(unit) mean",
+                      validator: (value) => validateInput(
+                        value,
+                        "Insulin",
+                        realisticMedicalRanges['insulin']![0],
+                        realisticMedicalRanges['insulin']![1],
+                      ),
+                    )),
                   ],
                 ),
               ),
@@ -150,15 +178,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Expanded(
                       child: InputField(
-                          controller: carbsMeanController,
-                          hintText: "e.g. 0 - 300",
-                          label: "Carbs(g) mean")),
+                    controller: carbsMeanController,
+                    hintText: "e.g. 0 - 300",
+                    label: "Carbs(g) mean",
+                    validator: (value) => validateInput(
+                      value,
+                      "Carbs",
+                      realisticMedicalRanges['carbs']![0],
+                      realisticMedicalRanges['carbs']![1],
+                    ),
+                  )),
                   SizedBox(width: 10),
                   Expanded(
                       child: InputField(
                     controller: stepsMeanController,
                     label: "Steps",
                     hintText: "e.g. 0 - 50000",
+                    validator: (value) => validateInput(
+                      value,
+                      "Steps",
+                      realisticMedicalRanges['steps']![0],
+                      realisticMedicalRanges['steps']![1],
+                    ),
                   )),
                 ],
               ),
@@ -167,15 +208,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Expanded(
                       child: InputField(
-                          controller: hrMeanController,
-                          hintText: "e.g. 40 - 180",
-                          label: "Heart Rate(bpm) mean")),
+                    controller: hrMeanController,
+                    hintText: "e.g. 40 - 180",
+                    label: "Heart Rate(bpm) mean",
+                    validator: (value) => validateInput(
+                      value,
+                      "Heart Rate",
+                      realisticMedicalRanges['heartRate']![0],
+                      realisticMedicalRanges['heartRate']![1],
+                    ),
+                  )),
                   SizedBox(width: 10),
                   Expanded(
                       child: InputField(
-                          controller: calsMeanController,
-                          hintText: "e.g. 0 - 5000",
-                          label: "Calories(kcal) mean")),
+                    controller: calsMeanController,
+                    hintText: "e.g. 0 - 5000",
+                    label: "Calories(kcal) mean",
+                    validator: (value) => validateInput(
+                      value,
+                      "Calories",
+                      realisticMedicalRanges['calories']![0],
+                      realisticMedicalRanges['calories']![1],
+                    ),
+                  )),
                 ],
               ),
               const SizedBox(height: 10),
@@ -298,11 +353,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       tooltipBackgroundColor: Colors.green,
                       textColor: Colors.white,
                       enableAutoScroll: true,
-                      child: PredictionResult())
+                      child: PredictionResult()),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String? validateInput(String? value, String label, double min, double max) {
+    if (value == null || value.trim().isEmpty) {
+      return '$label is required';
+    }
+
+    final parsed = double.tryParse(value);
+    if (parsed == null) {
+      return '$label must be a valid number';
+    }
+
+    if (parsed < 0) {
+      return '$label cannot be negative';
+    }
+
+    if (parsed < min || parsed > max) {
+      return 'Range: $min - $max';
+    }
+
+    return null;
   }
 }

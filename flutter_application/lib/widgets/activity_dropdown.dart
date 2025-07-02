@@ -21,10 +21,12 @@ class ActivityDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int>(
+      dropdownColor: Colors.white,
       value: selectedActivity,
       decoration: InputDecoration(
         labelText: 'Type of Physical Activity',
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
       ),
       items: activityOptions.entries.map((entry) {
         return DropdownMenuItem<int>(
