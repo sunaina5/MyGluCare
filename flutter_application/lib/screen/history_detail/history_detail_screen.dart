@@ -15,6 +15,7 @@ class PredictionDetailScreen extends StatefulWidget {
   State<PredictionDetailScreen> createState() => _PredictionDetailScreenState();
 }
 
+// This screen displays detailed information about a specific prediction.
 class _PredictionDetailScreenState extends State<PredictionDetailScreen> {
   @override
   Widget build(BuildContext context) {
